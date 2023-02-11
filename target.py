@@ -1,8 +1,12 @@
-from fastapi import FastAPI, Path, Body
+from fastapi import APIRouter, Path, Body
 from bson import ObjectId
 from pymongo import MongoClient
 
-app = FastAPI()
+targetRouter = APIRouter(
+    prefix="/targets",
+    tags=["Targets"],
+    responses={404: {"description": "Not found"}},
+)
 
 client = MongoClient("mongodb://localhost:27017/")
 db = client["targets_db"]
@@ -14,7 +18,7 @@ class Target:
         self.target_system = target_system
         self.server_list = server_list
 
-@app.get("/target/{_id}")
+@targetRouter.get("/target/{_id}")
 async def get_target(_id: ObjectId):
     target = targets_collection.find_one({"_id": _id})
     if target:
@@ -22,14 +26,14 @@ async def get_target(_id: ObjectId):
     else:
         return {"message": "Target with id {} not found".format(_id)}
 
-@app.post("/target")
+@targetRouter.post("/target")
 async def create_target(target: Target = Body(...)):
     target_dict = target.__dict__
     target_dict["_id"] = ObjectId()
     targets_collection.insert_one(target_dict)
     return {"message": "Target with id {} was created".format(target_dict["_id"])}
 
-@app.put("/target/{_id}")
+@targetRouter.put("/target/{_id}")
 async def update_target(_id: ObjectId, target: Target = Body(...)):
     target_dict = target.__dict__
     target_dict["_id"] = _id
@@ -39,7 +43,7 @@ async def update_target(_id: ObjectId, target: Target = Body(...)):
     else:
         return {"message": "Target with id {} not found".format(_id)}
 
-@app.delete("/target/{_id}")
+@targetRouter.delete("/target/{_id}")
 async def delete_target(_id: ObjectId):
     result = targets_collection.delete_one({"_id": _id})
     if result.deleted_count:
