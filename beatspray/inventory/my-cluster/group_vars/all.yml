@@ -1,0 +1,5 @@
+target_system:
+  system_name: "mongodb"
+  system_group: "mongodb-1"
+target_log:
+  log_path: "/var/log/mongodb/mongodb.log"
