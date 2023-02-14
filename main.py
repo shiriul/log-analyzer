@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-import target
+import api.target as target
 
 app = FastAPI()
 
