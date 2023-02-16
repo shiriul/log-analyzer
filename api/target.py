@@ -14,8 +14,8 @@ targetRouter = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
-client = MongoClient("mongodb://localhost:27017/")
-db = client["targets_db"]
+db_client = MongoClient("mongodb://localhost:27017/")
+db = db_client["targets_db"]
 targets_collection = db["targets"]
 
 class Target(BaseModel):
@@ -25,7 +25,7 @@ class Target(BaseModel):
     log_path: str
 
 @targetRouter.get("/")
-async def get_targets():
+async def list_targets():
     response_targets = []
     targets = list(targets_collection.find({}))
     for target in targets:
